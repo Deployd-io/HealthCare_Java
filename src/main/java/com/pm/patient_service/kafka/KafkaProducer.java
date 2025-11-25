@@ -27,5 +27,6 @@ public class KafkaProducer {
         } catch (Exception e) {
             log.error("Error sending PatientCreated event: {}", event, e);
         }
+		log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patient, patient);
     }
 }
