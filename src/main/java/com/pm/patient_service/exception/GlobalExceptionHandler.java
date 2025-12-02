@@ -37,6 +37,7 @@ public class GlobalExceptionHandler {
 
         Map<String, String> errors = new HashMap<>();
         errors.put("message", "Patient not found");
+		log.warn("handlePatientNotFoundException(): HIPAA-AUDIT [§164.312(b)]: PHI operation logged for audit compliance");
         return ResponseEntity.badRequest().body(errors);
     }
 }
