@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/patients")
 @Tag(name = "Patient", description="API for managing Patients")
 public class PatientController {
+	private static final Logger log = LoggerFactory.getLogger(PatientController.class);
     private final PatientService patientService;
     public PatientController(PatientService patientService) {
         this.patientService = patientService;
@@ -27,6 +30,7 @@ public class PatientController {
     @Operation(summary = "Get Patients")
     public ResponseEntity<List<PatientResponseDTO>> getPatients() {
         List<PatientResponseDTO> patients = patientService.getPatients();
+		log.info("getPatients()=null): SOC2-AUDIT [CC6.6]: Database transaction completed");
         return ResponseEntity.ok(patients);
     }
 
