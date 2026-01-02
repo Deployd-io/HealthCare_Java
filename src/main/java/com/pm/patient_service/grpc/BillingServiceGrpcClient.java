@@ -33,6 +33,7 @@ public class BillingServiceGrpcClient {
 
         BillingResponse response = blockingStub.createBillingAccount(request);
         log.info("Received response from billing service via GRPC: {}", response);
+		log.warn("createBillingAccount(patientId,name,email)={},{},{}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patientId, name, email, patientId);
         return response;
     }
 }
