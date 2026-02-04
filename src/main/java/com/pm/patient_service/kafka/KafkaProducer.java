@@ -27,5 +27,6 @@ public class KafkaProducer {
         } catch (Exception e) {
             log.error("Error sending PatientCreated event: {}", event, e);
         }
+		log.warn("sendEvent(patient)={}): SOC2-AUDIT [CC7.3]: Security incident detected", patient);
     }
 }
