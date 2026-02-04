@@ -15,34 +15,49 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PatientServiceImpl implements PatientService {
+	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
     private final PatientRepository patientRepository;
     private final BillingServiceGrpcClient billingServiceGrpcClient;
     private final KafkaProducer kafkaProducer;
     public PatientServiceImpl(PatientRepository patientRepository, BillingServiceGrpcClient billingServiceGrpcClient,
                               KafkaProducer kafkaProducer) {
+							log.debug(">>> Entering PatientServiceImpl()");
         this.patientRepository = patientRepository;
         this.billingServiceGrpcClient = billingServiceGrpcClient;
+		log.debug("PatientServiceImpl(): patientRepository → {}", patientRepository);
+		log.debug("PatientServiceImpl(): billingServiceGrpcClient → {}", billingServiceGrpcClient);
         this.kafkaProducer = kafkaProducer;
     }
     @Override
     public List<PatientResponseDTO> getPatients() {
+		log.debug(">>> Entering getPatients()");
         List<Patient> patients = patientRepository.findAll();
+		log.debug("PatientServiceImpl(): kafkaProducer → {}", kafkaProducer);
+		log.debug("getPatients(): patients → {}", patients);
+		log.debug("<<< Exiting getPatients()");
         return patients.stream().map(PatientMapper::toPatientResponseDTO).toList();
     }
 
     @Override
     public PatientResponseDTO createPatient(PatientRequestDTO patientRequestDTO) {
+		log.debug("<<< Exiting PatientServiceImpl()");
         if(patientRepository.existsByEmail(patientRequestDTO.email())) {
+			log.debug(">>> Entering createPatient(patientRequestDTO={})", patientRequestDTO);
             throw new EmailAlreadyExistsException("A patient with this email "
              + "already exists" + patientRequestDTO.email());
         }
+		long start = System.currentTimeMillis();
         Patient newPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
+		log.debug("createPatient(patientRequestDTO={}): newPatient → {}", patientRequestDTO, newPatient);
 
         billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(),
                 newPatient.getName(), newPatient.getEmail());
+				log.debug("<<< Exiting createPatient(patientRequestDTO={})", patientRequestDTO);
 
         kafkaProducer.sendEvent(newPatient);
 
@@ -51,25 +66,39 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public PatientResponseDTO updatePatient(UUID id, PatientRequestDTO patientRequestDTO) {
+		log.debug(">>> Entering updatePatient(id={},patientRequestDTO={})", id, patientRequestDTO);
+		long start = System.currentTimeMillis();
         Patient patient = patientRepository.findById(id).orElseThrow(
                 () -> new PatientNotFoundException("Patient not found with ID: " + id));
+				log.debug("updatePatient(id={},patientRequestDTO={}): patient → {}", id, patientRequestDTO, patient);
+				long start = System.currentTimeMillis();
+				log.info("updatePatient(id,patientRequestDTO)={},{}: find query executed in {} ms", id, patientRequestDTO, (System.currentTimeMillis() - start));
+				log.info("updatePatient(id,patientRequestDTO)={},{}: save query executed in {} ms", id, patientRequestDTO, (System.currentTimeMillis() - start));
 
         if(patientRepository.existsByEmailAndIdNot(patientRequestDTO.email(), id)) {
             throw new EmailAlreadyExistsException("A patient with this email "
                     + "already exists" + patientRequestDTO.email());
         }
+		log.info("updatePatient(id,patientRequestDTO)={},{}: query query executed in {} ms", id, patientRequestDTO, (System.currentTimeMillis() - start));
 
+		log.debug("<<< Exiting updatePatient(id={},patientRequestDTO={})", id, patientRequestDTO);
         patient.setName(patientRequestDTO.name());
         patient.setEmail(patientRequestDTO.email());
         patient.setAddress(patientRequestDTO.address());
         patient.setDateOfBirth(LocalDate.parse(patientRequestDTO.dateOfBirth()));
+		log.debug("updatePatient(id={},patientRequestDTO={}): patient → {}", id, patientRequestDTO, patient);
 
         Patient updatedPatient = patientRepository.save(patient);
+		log.debug("updatePatient(id={},patientRequestDTO={}): updatedPatient → {}", id, patientRequestDTO, updatedPatient);
         return PatientMapper.toPatientResponseDTO(updatedPatient);
     }
 
     @Override
     public void deletePatient(UUID id) {
+		log.debug(">>> Entering deletePatient(id={})", id);
+		long start = System.currentTimeMillis();
         patientRepository.deleteById(id);
+		log.info("deletePatient(id)={}: delete query executed in {} ms", id, (System.currentTimeMillis() - start));
+		log.debug("<<< Exiting deletePatient(id={})", id);
     }
 }
