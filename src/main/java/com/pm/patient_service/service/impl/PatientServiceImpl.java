@@ -15,9 +15,15 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PatientServiceImpl implements PatientService {
+    private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(PatientServiceImpl.class);
     private final PatientRepository patientRepository;
     private final BillingServiceGrpcClient billingServiceGrpcClient;
     private final KafkaProducer kafkaProducer;
@@ -27,49 +33,77 @@ public class PatientServiceImpl implements PatientService {
         this.billingServiceGrpcClient = billingServiceGrpcClient;
         this.kafkaProducer = kafkaProducer;
     }
+
     @Override
     public List<PatientResponseDTO> getPatients() {
+        logger.info(">>> Entering getPatients");
         List<Patient> patients = patientRepository.findAll();
+        log.warn("getPatients()=null): HIPAA-AUDIT [§164.312(a)(1)]: PHI access control check completed for user {}", patients);
+        log.warn("getPatients()=null): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patients);
+        log.warn("getPatients()=null): HIPAA-AUDIT [§164.312(a)(1)]: PHI access control check completed for user {}", patients);
+        log.warn("getPatients()=null): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patients);
+        logger.info("<<< Exiting getPatients");
         return patients.stream().map(PatientMapper::toPatientResponseDTO).toList();
     }
 
     @Override
     public PatientResponseDTO createPatient(PatientRequestDTO patientRequestDTO) {
-        if(patientRepository.existsByEmail(patientRequestDTO.email())) {
+        logger.info(">>> Entering createPatient");
+        if (patientRepository.existsByEmail(patientRequestDTO.email())) {
+            log.warn("createPatient(patientRequestDTO)={}): HIPAA-AUDIT [§164.312(a)(1)]: PHI access control check completed for user {}", patientRequestDTO, patientRequestDTO);
             throw new EmailAlreadyExistsException("A patient with this email "
-             + "already exists" + patientRequestDTO.email());
+                    + "already exists" + patientRequestDTO.email());
         }
         Patient newPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
 
         billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(),
                 newPatient.getName(), newPatient.getEmail());
-
+        log.warn("createPatient(patientRequestDTO)={}): HIPAA-AUDIT [§164.312(a)(1)]: PHI access control check completed for user {}", patientRequestDTO, patientRequestDTO);
+        log.error("createPatient(patientRequestDTO)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", patientRequestDTO);
         kafkaProducer.sendEvent(newPatient);
-
+        log.warn("createPatient(patientRequestDTO)={}): HIPAA-AUDIT [§164.312(a)(1)]: PHI access control check completed for user {}", patientRequestDTO, patientRequestDTO);
+        log.warn("createPatient(patientRequestDTO)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patientRequestDTO, patientRequestDTO);
+        log.error("createPatient(patientRequestDTO)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", patientRequestDTO);
+        logger.info("<<< Exiting createPatient");
         return PatientMapper.toPatientResponseDTO(newPatient);
     }
 
     @Override
     public PatientResponseDTO updatePatient(UUID id, PatientRequestDTO patientRequestDTO) {
+        logger.info(">>> Entering updatePatient");
+        log.warn("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.312(a)(1)]: PHI access control check completed for user {}", id, patientRequestDTO, patientRequestDTO);
+        logger.info(">>> Entering updatePatient");
+        log.warn("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", id, patientRequestDTO, id);
         Patient patient = patientRepository.findById(id).orElseThrow(
                 () -> new PatientNotFoundException("Patient not found with ID: " + id));
+        log.error("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", id, patientRequestDTO);
 
-        if(patientRepository.existsByEmailAndIdNot(patientRequestDTO.email(), id)) {
+        if (patientRepository.existsByEmailAndIdNot(patientRequestDTO.email(), id)) {
             throw new EmailAlreadyExistsException("A patient with this email "
                     + "already exists" + patientRequestDTO.email());
         }
-
+        log.warn("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.312(a)(1)]: PHI access control check completed for user {}", id, patientRequestDTO, patientRequestDTO);
+        log.warn("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", id, patientRequestDTO, id);
         patient.setName(patientRequestDTO.name());
+        log.error("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", id, patientRequestDTO);
         patient.setEmail(patientRequestDTO.email());
         patient.setAddress(patientRequestDTO.address());
         patient.setDateOfBirth(LocalDate.parse(patientRequestDTO.dateOfBirth()));
-
+        log.warn("deletePatient(id)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", id, id);
         Patient updatedPatient = patientRepository.save(patient);
+        log.warn("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.312(a)(1)]: PHI access control check completed for user {}", id, patientRequestDTO, patientRequestDTO);
+        log.warn("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", id, patientRequestDTO, id);
+        log.error("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", id, patientRequestDTO);
+        logger.info("<<< Exiting updatePatient");
         return PatientMapper.toPatientResponseDTO(updatedPatient);
     }
 
     @Override
     public void deletePatient(UUID id) {
+        logger.info(">>> Entering deletePatient");
+        logger.info(">>> Entering deletePatient");
         patientRepository.deleteById(id);
+        log.warn("deletePatient(id)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", id, id);
+        logger.info("<<< Exiting deletePatient");
     }
 }

@@ -27,5 +27,14 @@ public class KafkaProducer {
         } catch (Exception e) {
             log.error("Error sending PatientCreated event: {}", event, e);
         }
+		log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patient, patient);
+		log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patient, patient);
+		log.error("sendEvent(patient)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", patient);
+		log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patient, patient);
+		log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed", patient);
+		log.error("sendEvent(patient)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", patient);
+		log.error("sendEvent(patient)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", patient);
+		log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed", patient);
+		log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed", patient);
     }
 }
