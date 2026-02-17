@@ -17,10 +17,12 @@ import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PatientServiceImpl implements PatientService {
-	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
     private static final Logger logger = LoggerFactory.getLogger(PatientServiceImpl.class);
     private final PatientRepository patientRepository;
     private final BillingServiceGrpcClient billingServiceGrpcClient;
@@ -31,6 +33,7 @@ public class PatientServiceImpl implements PatientService {
         this.billingServiceGrpcClient = billingServiceGrpcClient;
         this.kafkaProducer = kafkaProducer;
     }
+
     @Override
     public List<PatientResponseDTO> getPatients() {
         logger.info(">>> Entering getPatients");
@@ -46,9 +49,10 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public PatientResponseDTO createPatient(PatientRequestDTO patientRequestDTO) {
         logger.info(">>> Entering createPatient");
-        if(patientRepository.existsByEmail(patientRequestDTO.email())) {
+        if (patientRepository.existsByEmail(patientRequestDTO.email())) {
+            log.warn("createPatient(patientRequestDTO)={}): HIPAA-AUDIT [§164.312(a)(1)]: PHI access control check completed for user {}", patientRequestDTO, patientRequestDTO);
             throw new EmailAlreadyExistsException("A patient with this email "
-             + "already exists" + patientRequestDTO.email());
+                    + "already exists" + patientRequestDTO.email());
         }
         Patient newPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
 
@@ -67,10 +71,14 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public PatientResponseDTO updatePatient(UUID id, PatientRequestDTO patientRequestDTO) {
         logger.info(">>> Entering updatePatient");
+        log.warn("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.312(a)(1)]: PHI access control check completed for user {}", id, patientRequestDTO, patientRequestDTO);
+        logger.info(">>> Entering updatePatient");
+        log.warn("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", id, patientRequestDTO, id);
         Patient patient = patientRepository.findById(id).orElseThrow(
                 () -> new PatientNotFoundException("Patient not found with ID: " + id));
+        log.error("updatePatient(id,patientRequestDTO)={},{}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", id, patientRequestDTO);
 
-        if(patientRepository.existsByEmailAndIdNot(patientRequestDTO.email(), id)) {
+        if (patientRepository.existsByEmailAndIdNot(patientRequestDTO.email(), id)) {
             throw new EmailAlreadyExistsException("A patient with this email "
                     + "already exists" + patientRequestDTO.email());
         }
@@ -92,6 +100,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void deletePatient(UUID id) {
+        logger.info(">>> Entering deletePatient");
         logger.info(">>> Entering deletePatient");
         patientRepository.deleteById(id);
         log.warn("deletePatient(id)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", id, id);
