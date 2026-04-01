@@ -23,14 +23,20 @@ public class PatientController {
 	private static final Logger log = LoggerFactory.getLogger(PatientController.class);
     private final PatientService patientService;
     public PatientController(PatientService patientService) {
+		log.debug(">>> Entering PatientController(patientService={})", patientService);
         this.patientService = patientService;
+		log.debug("PatientController(patientService={}): patientService → {}", patientService, patientService);
+		log.debug("PatientController(patientService={}): this.patientService → {}", patientService, this.patientService);
+		log.debug("<<< Exiting PatientController(patientService={})", patientService);
     }
 
     @GetMapping
     @Operation(summary = "Get Patients")
     public ResponseEntity<List<PatientResponseDTO>> getPatients() {
+		log.debug(">>> Entering getPatients()");
         List<PatientResponseDTO> patients = patientService.getPatients();
 		log.info("getPatients()=null): SOC2-AUDIT [CC6.6]: Database transaction completed");
+		log.debug("getPatients(): patients → {}", patients);
         return ResponseEntity.ok(patients);
     }
 
@@ -53,6 +59,7 @@ public class PatientController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a Patient")
     public ResponseEntity<Void> deletePatient(@PathVariable UUID id) {
+		log.debug(">>> Entering deletePatient(id={})", id);
         patientService.deletePatient(id);
         return ResponseEntity.noContent().build();
     }

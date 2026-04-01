@@ -15,6 +15,7 @@ public class KafkaProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
     public void sendEvent(Patient patient) {
+		log.debug(">>> Entering sendEvent(patient={})", patient);
         PatientEvent event = PatientEvent.newBuilder()
                 .setPatientId(patient.getId().toString())
                 .setName(patient.getName())
@@ -28,5 +29,6 @@ public class KafkaProducer {
             log.error("Error sending PatientCreated event: {}", event, e);
         }
 		log.warn("sendEvent(patient)={}): SOC2-AUDIT [CC7.3]: Security incident detected", patient);
+		log.debug("<<< Exiting sendEvent(patient={})", patient);
     }
 }

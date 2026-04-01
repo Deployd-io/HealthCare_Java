@@ -26,34 +26,50 @@ public class PatientServiceImpl implements PatientService {
     private final KafkaProducer kafkaProducer;
     public PatientServiceImpl(PatientRepository patientRepository, BillingServiceGrpcClient billingServiceGrpcClient,
                               KafkaProducer kafkaProducer) {
+							log.debug(">>> Entering PatientServiceImpl()");
         this.patientRepository = patientRepository;
         this.billingServiceGrpcClient = billingServiceGrpcClient;
+		log.debug("PatientServiceImpl(): patientRepository → {}", patientRepository);
+		log.debug("PatientServiceImpl(): this.patientRepository → {}", this.patientRepository);
+		log.debug("<<< Exiting PatientServiceImpl()");
+		log.debug("PatientServiceImpl(): billingServiceGrpcClient → {}", billingServiceGrpcClient);
         this.kafkaProducer = kafkaProducer;
+		log.debug("PatientServiceImpl(): this.billingServiceGrpcClient → {}", this.billingServiceGrpcClient);
+		log.debug("PatientServiceImpl(): this.kafkaProducer → {}", this.kafkaProducer);
+		log.debug("PatientServiceImpl(): kafkaProducer → {}", kafkaProducer);
     }
     @Override
     public List<PatientResponseDTO> getPatients() {
+		log.debug(">>> Entering getPatients()");
         List<Patient> patients = patientRepository.findAll();
+		log.debug("getPatients(): patients → {}", patients);
+		log.debug("<<< Exiting getPatients()");
         return patients.stream().map(PatientMapper::toPatientResponseDTO).toList();
     }
 
     @Override
     public PatientResponseDTO createPatient(PatientRequestDTO patientRequestDTO) {
+		log.debug(">>> Entering createPatient(patientRequestDTO={})", patientRequestDTO);
         if(patientRepository.existsByEmail(patientRequestDTO.email())) {
             throw new EmailAlreadyExistsException("A patient with this email "
              + "already exists" + patientRequestDTO.email());
         }
         Patient newPatient = patientRepository.save(PatientMapper.toModel(patientRequestDTO));
+		log.info("createPatient(patientRequestDTO)={}: save query executed in {} ms", patientRequestDTO, (System.currentTimeMillis() - start));
 
         billingServiceGrpcClient.createBillingAccount(newPatient.getId().toString(),
                 newPatient.getName(), newPatient.getEmail());
+				log.debug("createPatient(patientRequestDTO={}): newPatient → {}", patientRequestDTO, newPatient);
 
         kafkaProducer.sendEvent(newPatient);
 
+		log.debug("<<< Exiting createPatient(patientRequestDTO={})", patientRequestDTO);
         return PatientMapper.toPatientResponseDTO(newPatient);
     }
 
     @Override
     public PatientResponseDTO updatePatient(UUID id, PatientRequestDTO patientRequestDTO) {
+		log.debug(">>> Entering updatePatient(id={},patientRequestDTO={})", id, patientRequestDTO);
         Patient patient = patientRepository.findById(id).orElseThrow(
                 () -> new PatientNotFoundException("Patient not found with ID: " + id));
 
@@ -61,13 +77,16 @@ public class PatientServiceImpl implements PatientService {
             throw new EmailAlreadyExistsException("A patient with this email "
                     + "already exists" + patientRequestDTO.email());
         }
+		log.info("updatePatient(id,patientRequestDTO)={},{}: query query executed in {} ms", id, patientRequestDTO, (System.currentTimeMillis() - start));
 
         patient.setName(patientRequestDTO.name());
         patient.setEmail(patientRequestDTO.email());
         patient.setAddress(patientRequestDTO.address());
         patient.setDateOfBirth(LocalDate.parse(patientRequestDTO.dateOfBirth()));
+		log.debug("updatePatient(id={},patientRequestDTO={}): patient → {}", id, patientRequestDTO, patient);
 
         Patient updatedPatient = patientRepository.save(patient);
+		log.info("updatePatient(id,patientRequestDTO)={},{}: save query executed in {} ms", id, patientRequestDTO, (System.currentTimeMillis() - start));
 		log.info("updatePatient(id,patientRequestDTO)={},{}): SOC2-AUDIT [CC8.1]: Change management operation performed", id, patientRequestDTO);
 		log.info("updatePatient(id,patientRequestDTO)={},{}): SOC2-AUDIT [CC6.6]: Database transaction completed", id, patientRequestDTO);
         return PatientMapper.toPatientResponseDTO(updatedPatient);
@@ -75,6 +94,7 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void deletePatient(UUID id) {
+		log.debug(">>> Entering deletePatient(id={})", id);
         patientRepository.deleteById(id);
     }
 }
