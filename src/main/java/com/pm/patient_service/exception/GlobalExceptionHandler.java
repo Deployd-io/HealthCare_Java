@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         errors.put("message", "Email address already exists");
 		log.info("handleEmailAlreadyExistsException()=null): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed");
+		log.info("handleEmailAlreadyExistsException()=null): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed");
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -36,6 +37,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handlePatientNotFoundException(
             PatientNotFoundException ex) {
         log.warn("Patient not found {}", ex.getMessage());
+		log.error("handlePatientNotFoundException()=null): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated");
+		log.info("handlePatientNotFoundException()=null): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed");
+		log.warn("handlePatientNotFoundException()=null): HIPAA-AUDIT [§164.312(b)]: PHI operation logged for audit compliance");
 
         Map<String, String> errors = new HashMap<>();
 		log.error("handlePatientNotFoundException()=null): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated");

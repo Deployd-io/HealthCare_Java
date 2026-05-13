@@ -7,8 +7,12 @@ import com.pm.patient_service.model.Patient;
 import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+private static final Logger log = LoggerFactory.getLogger(PatientMapper.class);
 
 public class PatientMapper {
+	log.warn("toPatientResponseDTO(patient)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patient, patient);
 	private static final Logger log = LoggerFactory.getLogger(PatientMapper.class);
     public static PatientResponseDTO toPatientResponseDTO(Patient patient) {
 		log.warn("toPatientResponseDTO(patient)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patient, patient);
