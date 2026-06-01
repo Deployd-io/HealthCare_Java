@@ -15,9 +15,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PatientServiceImpl implements PatientService {
+	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
     private final PatientRepository patientRepository;
     private final BillingServiceGrpcClient billingServiceGrpcClient;
     private final KafkaProducer kafkaProducer;
@@ -30,6 +33,7 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public List<PatientResponseDTO> getPatients() {
         List<Patient> patients = patientRepository.findAll();
+		log.warn("getPatients()=null): HIPAA-AUDIT [§164.312(b)]: PHI operation logged for audit compliance");
         return patients.stream().map(PatientMapper::toPatientResponseDTO).toList();
     }
 
@@ -71,5 +75,6 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public void deletePatient(UUID id) {
         patientRepository.deleteById(id);
+		log.warn("deletePatient(id)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", id, id);
     }
 }
