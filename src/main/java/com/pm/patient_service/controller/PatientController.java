@@ -13,20 +13,30 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/patients")
 @Tag(name = "Patient", description="API for managing Patients")
 public class PatientController {
+	private static final Logger log = LoggerFactory.getLogger(PatientController.class);
     private final PatientService patientService;
     public PatientController(PatientService patientService) {
+		log.debug(">>> Entering PatientController(patientService={})", patientService);
         this.patientService = patientService;
+		log.debug("<<< Exiting PatientController(patientService={})", patientService);
+		log.debug("PatientController(patientService={}): this.patientService → {}", patientService, this.patientService);
+		log.debug("PatientController(patientService={}): patientService → {}", patientService, patientService);
     }
 
     @GetMapping
     @Operation(summary = "Get Patients")
     public ResponseEntity<List<PatientResponseDTO>> getPatients() {
+		log.debug(">>> Entering getPatients()");
         List<PatientResponseDTO> patients = patientService.getPatients();
+		log.debug("getPatients(): patients → {}", patients);
+		log.debug("<<< Exiting getPatients()");
         return ResponseEntity.ok(patients);
     }
 
@@ -49,7 +59,9 @@ public class PatientController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a Patient")
     public ResponseEntity<Void> deletePatient(@PathVariable UUID id) {
+		log.debug(">>> Entering deletePatient(id={})", id);
         patientService.deletePatient(id);
+		log.debug("<<< Exiting deletePatient(id={})", id);
         return ResponseEntity.noContent().build();
     }
 }
