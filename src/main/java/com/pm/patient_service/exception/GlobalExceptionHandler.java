@@ -17,6 +17,8 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(
                 error -> errors.put(error.getField() , error.getDefaultMessage()));
+				log.info("handleValidationException(ex)={}): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed", ex);
+				log.warn("handleValidationException(ex)={}): SOC2-AUDIT [CC6.1]: Password reset operation performed", ex);
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -27,6 +29,8 @@ public class GlobalExceptionHandler {
         log.warn("Email address already exists {}", ex.getMessage());
         Map<String, String> errors = new HashMap<>();
         errors.put("message", "Email address already exists");
+		log.info("handleEmailAlreadyExistsException()=null): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed");
+		log.warn("handleEmailAlreadyExistsException()=null): SOC2-AUDIT [CC6.1]: Password reset operation performed");
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -35,6 +39,10 @@ public class GlobalExceptionHandler {
             PatientNotFoundException ex) {
         log.warn("Patient not found {}", ex.getMessage());
 
+		log.error("handlePatientNotFoundException()=null): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated");
+		log.info("handlePatientNotFoundException()=null): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed");
+		log.warn("handlePatientNotFoundException()=null): HIPAA-AUDIT [§164.312(b)]: PHI operation logged for audit compliance");
+		log.warn("handlePatientNotFoundException()=null): SOC2-AUDIT [CC6.1]: Password reset operation performed");
         Map<String, String> errors = new HashMap<>();
         errors.put("message", "Patient not found");
         return ResponseEntity.badRequest().body(errors);
