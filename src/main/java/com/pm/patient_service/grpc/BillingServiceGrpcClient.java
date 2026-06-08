@@ -27,12 +27,16 @@ public class BillingServiceGrpcClient {
         blockingStub = BillingServiceGrpc.newBlockingStub(channel);
     }
     public BillingResponse createBillingAccount(String patientId, String name, String email) {
+	log.debug(">>> Entering createBillingAccount(patientId={},name={},email={})", patientId, name, email);
 
         BillingRequest request = BillingRequest.newBuilder().setPatientId(patientId)
                 .setName(name).setEmail(email).build();
 
+		log.debug("<<< Exiting createBillingAccount(patientId={},name={},email={})", patientId, name, email);
         BillingResponse response = blockingStub.createBillingAccount(request);
         log.info("Received response from billing service via GRPC: {}", response);
+		log.warn("createBillingAccount(patientId,name,email)={},{},{}): HIPAA-AUDIT [§164.312(b)]: PHI operation logged for audit compliance", patientId, name, email);
+		log.debug("createBillingAccount(patientId={},name={},email={}): response → {}", patientId, name, email, response);
         return response;
     }
 }

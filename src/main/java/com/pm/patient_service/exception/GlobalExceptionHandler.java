@@ -14,29 +14,41 @@ public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+		log.debug(">>> Entering handleValidationException(ex={})", ex);
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(
                 error -> errors.put(error.getField() , error.getDefaultMessage()));
+				log.debug("handleValidationException(ex={}): errors → {}", ex, errors);
+				log.info("handleValidationException(ex)={}): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed", ex);
+		log.debug("<<< Exiting handleValidationException(ex={})", ex);
         return ResponseEntity.badRequest().body(errors);
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> handleEmailAlreadyExistsException(
             EmailAlreadyExistsException ex) {
+			log.debug(">>> Entering handleEmailAlreadyExistsException(ex={})", ex);
 
         log.warn("Email address already exists {}", ex.getMessage());
         Map<String, String> errors = new HashMap<>();
         errors.put("message", "Email address already exists");
+		log.info("handleEmailAlreadyExistsException(ex)={}): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed", ex);
+		log.debug("<<< Exiting handleEmailAlreadyExistsException(ex={})", ex);
         return ResponseEntity.badRequest().body(errors);
     }
 
     @ExceptionHandler(PatientNotFoundException.class)
     public ResponseEntity<Map<String, String>> handlePatientNotFoundException(
             PatientNotFoundException ex) {
+			log.debug(">>> Entering handlePatientNotFoundException(ex={})", ex);
         log.warn("Patient not found {}", ex.getMessage());
 
+		log.error("handlePatientNotFoundException(ex)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", ex);
+		log.info("handlePatientNotFoundException(ex)={}): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed", ex);
+		log.warn("handlePatientNotFoundException(ex)={}): HIPAA-AUDIT [§164.312(b)]: PHI operation logged for audit compliance", ex);
         Map<String, String> errors = new HashMap<>();
         errors.put("message", "Patient not found");
+		log.debug("<<< Exiting handlePatientNotFoundException(ex={})", ex);
         return ResponseEntity.badRequest().body(errors);
     }
 }

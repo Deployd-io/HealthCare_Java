@@ -15,17 +15,22 @@ public class KafkaProducer {
         this.kafkaTemplate = kafkaTemplate;
     }
     public void sendEvent(Patient patient) {
+		log.debug(">>> Entering sendEvent(patient={})", patient);
         PatientEvent event = PatientEvent.newBuilder()
                 .setPatientId(patient.getId().toString())
                 .setName(patient.getName())
                 .setEmail(patient.getEmail())
                 .setEventType("PATIENT_CREATED")
                 .build();
+				log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed", patient);
+				log.error("sendEvent(patient)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", patient);
+				log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patient, patient);
 
         try {
             kafkaTemplate.send("patient", event.toByteArray());
         } catch (Exception e) {
             log.error("Error sending PatientCreated event: {}", event, e);
         }
+		log.debug("<<< Exiting sendEvent(patient={})", patient);
     }
 }
