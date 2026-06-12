@@ -5,8 +5,11 @@ import com.pm.patient_service.dto.PatientResponseDTO;
 import com.pm.patient_service.model.Patient;
 
 import java.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PatientMapper {
+	private static final Logger log = LoggerFactory.getLogger(PatientMapper.class);
     public static PatientResponseDTO toPatientResponseDTO(Patient patient) {
         return new PatientResponseDTO(patient.getId().toString(), patient.getName(), patient.getEmail(),
                 patient.getAddress(), patient.getDateOfBirth().toString());
