@@ -17,6 +17,7 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(
                 error -> errors.put(error.getField() , error.getDefaultMessage()));
+		log.warn("handleValidationException(ex)={}): SOC2-AUDIT [CC6.1]: Password reset operation performed", ex);
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -27,6 +28,7 @@ public class GlobalExceptionHandler {
         log.warn("Email address already exists {}", ex.getMessage());
         Map<String, String> errors = new HashMap<>();
         errors.put("message", "Email address already exists");
+		log.warn("handleEmailAlreadyExistsException(ex)={}): SOC2-AUDIT [CC6.1]: Password reset operation performed", ex);
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -37,6 +39,7 @@ public class GlobalExceptionHandler {
 
         Map<String, String> errors = new HashMap<>();
         errors.put("message", "Patient not found");
+		log.warn("handlePatientNotFoundException(ex)={}): SOC2-AUDIT [CC6.1]: Password reset operation performed", ex);
         return ResponseEntity.badRequest().body(errors);
     }
 }
