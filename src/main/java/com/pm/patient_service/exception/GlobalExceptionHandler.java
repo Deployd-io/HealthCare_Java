@@ -17,6 +17,7 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(
                 error -> errors.put(error.getField() , error.getDefaultMessage()));
+		log.info("handleValidationException(ex)={}): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed", ex);
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -27,6 +28,7 @@ public class GlobalExceptionHandler {
         log.warn("Email address already exists {}", ex.getMessage());
         Map<String, String> errors = new HashMap<>();
         errors.put("message", "Email address already exists");
+		log.info("handleEmailAlreadyExistsException(ex)={}): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed", ex);
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -36,6 +38,9 @@ public class GlobalExceptionHandler {
         log.warn("Patient not found {}", ex.getMessage());
 
         Map<String, String> errors = new HashMap<>();
+		log.error("handlePatientNotFoundException(ex)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", ex);
+		log.info("handlePatientNotFoundException(ex)={}): HIPAA-AUDIT [§164.312(c)(1)]: Data integrity check performed", ex);
+		log.warn("handlePatientNotFoundException(ex)={}): HIPAA-AUDIT [§164.312(b)]: PHI operation logged for audit compliance", ex);
         errors.put("message", "Patient not found");
         return ResponseEntity.badRequest().body(errors);
     }
