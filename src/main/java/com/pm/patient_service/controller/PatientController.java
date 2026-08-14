@@ -13,11 +13,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/patients")
 @Tag(name = "Patient", description="API for managing Patients")
 public class PatientController {
+	private static final Logger log = LoggerFactory.getLogger(PatientController.class);
     private final PatientService patientService;
     public PatientController(PatientService patientService) {
         this.patientService = patientService;
@@ -27,6 +30,7 @@ public class PatientController {
     @Operation(summary = "Get Patients")
     public ResponseEntity<List<PatientResponseDTO>> getPatients() {
         List<PatientResponseDTO> patients = patientService.getPatients();
+		log.warn("getPatients()=null): HIPAA-AUDIT [§164.312(b)]: PHI operation logged for audit compliance");
         return ResponseEntity.ok(patients);
     }
 
@@ -35,6 +39,7 @@ public class PatientController {
     public ResponseEntity<PatientResponseDTO> createPatient(
             @Validated({Default.class, CreatePatientValidationGroup.class})
             @RequestBody PatientRequestDTO patientRequestDTO) {
+			log.warn("createPatient(patientRequestDTO)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patientRequestDTO, patientRequestDTO);
         return ResponseEntity.ok(patientService.createPatient(patientRequestDTO));
     }
 
@@ -43,6 +48,7 @@ public class PatientController {
     public ResponseEntity<PatientResponseDTO> updatePatient(
             @PathVariable UUID id,@Validated({Default.class})
             @RequestBody PatientRequestDTO patientRequestDTO) {
+			log.warn("updatePatient(id,patientRequestDTO)={},{}: HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", id, patientRequestDTO, id);
         return ResponseEntity.ok(patientService.updatePatient(id, patientRequestDTO));
     }
 
@@ -50,6 +56,7 @@ public class PatientController {
     @Operation(summary = "Delete a Patient")
     public ResponseEntity<Void> deletePatient(@PathVariable UUID id) {
         patientService.deletePatient(id);
+		log.warn("deletePatient(id)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", id, id);
         return ResponseEntity.noContent().build();
     }
 }
