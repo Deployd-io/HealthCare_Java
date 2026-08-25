@@ -15,6 +15,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
+		log.log_integrity("ENTERING: handleValidationException() method");
         ex.getBindingResult().getFieldErrors().forEach(
                 error -> errors.put(error.getField() , error.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
@@ -25,6 +26,7 @@ public class GlobalExceptionHandler {
             EmailAlreadyExistsException ex) {
 
         log.warn("Email address already exists {}", ex.getMessage());
+		// SUGGESTED FIX (review before applying): log.warn("*** *** already exists {}", ex.getMessage());
         Map<String, String> errors = new HashMap<>();
         errors.put("message", "Email address already exists");
         return ResponseEntity.badRequest().body(errors);
