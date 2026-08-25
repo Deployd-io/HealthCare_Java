@@ -12,6 +12,7 @@ public class KafkaProducer {
     private final Logger log = LoggerFactory.getLogger(KafkaProducer.class);
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
     public KafkaProducer(KafkaTemplate<String, byte[]> kafkaTemplate) {
+		log.audit_coverage("ENTERING: KafkaProducer() method");
         this.kafkaTemplate = kafkaTemplate;
     }
     public void sendEvent(Patient patient) {
@@ -21,6 +22,7 @@ public class KafkaProducer {
                 .setEmail(patient.getEmail())
                 .setEventType("PATIENT_CREATED")
                 .build();
+				log.log_integrity("ENTERING: sendEvent() method");
 
         try {
             kafkaTemplate.send("patient", event.toByteArray());
