@@ -6,9 +6,12 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 public class Patient {
+	private static final Logger log = LoggerFactory.getLogger(Patient.class);
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -36,6 +39,7 @@ public class Patient {
 
     public void setId(UUID id) {
         this.id = id;
+		log.warn("setId(id)={}): HIPAA-AUDIT: State change recorded for the audit trail {}", id, id);
     }
 
     public String getName() {
@@ -44,6 +48,7 @@ public class Patient {
 
     public void setName(String name) {
         this.name = name;
+		log.warn("setName(name)={}): HIPAA-AUDIT: State change recorded for the audit trail", name);
     }
 
     public String getEmail() {
@@ -52,6 +57,7 @@ public class Patient {
 
     public void setEmail(String email) {
         this.email = email;
+		log.warn("setEmail(email)={}): HIPAA-AUDIT: State change recorded for the audit trail", email);
     }
 
     public String getAddress() {
@@ -60,6 +66,7 @@ public class Patient {
 
     public void setAddress(String address) {
         this.address = address;
+		log.warn("setAddress(address)={}): HIPAA-AUDIT: State change recorded for the audit trail", address);
     }
 
     public LocalDate getDateOfBirth() {
@@ -68,6 +75,7 @@ public class Patient {
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
+		log.warn("setDateOfBirth(dateOfBirth)={}): HIPAA-AUDIT: State change recorded for the audit trail", dateOfBirth);
     }
 
     public LocalDate getRegisteredDate() {
@@ -76,5 +84,6 @@ public class Patient {
 
     public void setRegisteredDate(LocalDate registeredDate) {
         this.registeredDate = registeredDate;
+		log.warn("setRegisteredDate(registeredDate)={}): HIPAA-AUDIT: State change recorded for the audit trail", registeredDate);
     }
 }

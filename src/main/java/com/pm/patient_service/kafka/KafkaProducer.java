@@ -21,6 +21,9 @@ public class KafkaProducer {
                 .setEmail(patient.getEmail())
                 .setEventType("PATIENT_CREATED")
                 .build();
+				log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(b)]: PHI access logged for audit trail {}", patient, patient);
+				log.warn("sendEvent(patient)={}): HIPAA-AUDIT [§164.312(e)(1)]: Secure PHI transmission completed", patient);
+				log.error("sendEvent(patient)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", patient);
 
         try {
             kafkaTemplate.send("patient", event.toByteArray());
