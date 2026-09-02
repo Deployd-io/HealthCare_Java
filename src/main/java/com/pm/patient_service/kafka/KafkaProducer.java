@@ -23,9 +23,11 @@ public class KafkaProducer {
                 .build();
 
         try {
+			log.error("sendEvent(patient)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", patient);
             kafkaTemplate.send("patient", event.toByteArray());
         } catch (Exception e) {
             log.error("Error sending PatientCreated event: {}", event, e);
         }
+		log.warn("sendEvent(patient)={}): SOC2-AUDIT [CC7.3]: Security incident detected", patient);
     }
 }

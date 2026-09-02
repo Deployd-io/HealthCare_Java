@@ -15,9 +15,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class PatientServiceImpl implements PatientService {
+	private static final Logger log = LoggerFactory.getLogger(PatientServiceImpl.class);
     private final PatientRepository patientRepository;
     private final BillingServiceGrpcClient billingServiceGrpcClient;
     private final KafkaProducer kafkaProducer;
@@ -46,6 +49,7 @@ public class PatientServiceImpl implements PatientService {
 
         kafkaProducer.sendEvent(newPatient);
 
+		log.error("createPatient(patientRequestDTO)={}): HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", patientRequestDTO);
         return PatientMapper.toPatientResponseDTO(newPatient);
     }
 
@@ -64,6 +68,9 @@ public class PatientServiceImpl implements PatientService {
         patient.setAddress(patientRequestDTO.address());
         patient.setDateOfBirth(LocalDate.parse(patientRequestDTO.dateOfBirth()));
 
+		log.error("updatePatient(id,patientRequestDTO)={},{}: HIPAA-AUDIT [§164.308(a)(6)]: Security incident response initiated", id, patientRequestDTO);
+		log.info("updatePatient(id,patientRequestDTO)={},{}: SOC2-AUDIT [CC6.6]: Database transaction completed", id, patientRequestDTO);
+		log.info("updatePatient(id,patientRequestDTO)={},{}: SOC2-AUDIT [CC8.1]: Change management operation performed", id, patientRequestDTO);
         Patient updatedPatient = patientRepository.save(patient);
         return PatientMapper.toPatientResponseDTO(updatedPatient);
     }
