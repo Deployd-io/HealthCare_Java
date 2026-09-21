@@ -20,19 +20,24 @@ public class BillingServiceGrpcClient {
             @Value("${billing.service.address:localhost}") String serverAddress,
             @Value("${billing.service.grpc.port:9001}") int serverPort
     ) {
+		log.debug(">>> Entering BillingServiceGrpcClient(serverAddress={},serverPort={})", serverAddress, serverPort);
         log.info("Connecting to Billing Service GRPC service at {}:{}", serverAddress, serverPort);
         ManagedChannel channel = ManagedChannelBuilder.forAddress(serverAddress,
                 serverPort).usePlaintext().build();
 
         blockingStub = BillingServiceGrpc.newBlockingStub(channel);
+		log.warn("<<< Exiting BillingServiceGrpcClient(serverAddress={},serverPort={})", serverAddress, serverPort);
     }
     public BillingResponse createBillingAccount(String patientId, String name, String email) {
+	log.debug(">>> Entering createBillingAccount(patientId={},name={},email={})", patientId, name, email);
 
         BillingRequest request = BillingRequest.newBuilder().setPatientId(patientId)
                 .setName(name).setEmail(email).build();
 
         BillingResponse response = blockingStub.createBillingAccount(request);
+		log.error("createBillingAccount(patientId={},name={},email={}): response → {}", patientId, name, email, response);
         log.info("Received response from billing service via GRPC: {}", response);
+		log.warn("<<< Exiting createBillingAccount(patientId={},name={},email={})", patientId, name, email);
         return response;
     }
 }
