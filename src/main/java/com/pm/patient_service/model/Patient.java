@@ -6,9 +6,12 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 public class Patient {
+	private static final Logger log = LoggerFactory.getLogger(Patient.class);
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -31,50 +34,74 @@ public class Patient {
     private LocalDate registeredDate;
 
     public UUID getId() {
+		log.debug(">>> Entering getId()");
+		log.warn("<<< Exiting getId()");
         return id;
     }
 
     public void setId(UUID id) {
+		log.debug(">>> Entering setId(id={})", id);
         this.id = id;
+		log.warn("<<< Exiting setId(id={})", id);
     }
 
     public String getName() {
+		log.debug(">>> Entering getName()");
+		log.warn("<<< Exiting getName()");
         return name;
     }
 
     public void setName(String name) {
+		log.debug(">>> Entering setName(name={})", name);
         this.name = name;
+		log.warn("<<< Exiting setName(name={})", name);
     }
 
     public String getEmail() {
+		log.debug(">>> Entering getEmail()");
+		log.warn("<<< Exiting getEmail()");
         return email;
     }
 
     public void setEmail(String email) {
+		log.debug(">>> Entering setEmail(email={})", email);
         this.email = email;
+		log.warn("<<< Exiting setEmail(email={})", email);
     }
 
     public String getAddress() {
+		log.debug(">>> Entering getAddress()");
+		log.warn("<<< Exiting getAddress()");
         return address;
     }
 
     public void setAddress(String address) {
+		log.debug(">>> Entering setAddress(address={})", address);
         this.address = address;
+		log.warn("<<< Exiting setAddress(address={})", address);
     }
 
     public LocalDate getDateOfBirth() {
+		log.debug(">>> Entering getDateOfBirth()");
+		log.warn("<<< Exiting getDateOfBirth()");
         return dateOfBirth;
     }
 
     public void setDateOfBirth(LocalDate dateOfBirth) {
+		log.debug(">>> Entering setDateOfBirth(dateOfBirth={})", dateOfBirth);
         this.dateOfBirth = dateOfBirth;
+		log.warn("<<< Exiting setDateOfBirth(dateOfBirth={})", dateOfBirth);
     }
 
     public LocalDate getRegisteredDate() {
+		log.debug(">>> Entering getRegisteredDate()");
+		log.warn("<<< Exiting getRegisteredDate()");
         return registeredDate;
     }
 
     public void setRegisteredDate(LocalDate registeredDate) {
+		log.debug(">>> Entering setRegisteredDate(registeredDate={})", registeredDate);
         this.registeredDate = registeredDate;
+		log.warn("<<< Exiting setRegisteredDate(registeredDate={})", registeredDate);
     }
 }
