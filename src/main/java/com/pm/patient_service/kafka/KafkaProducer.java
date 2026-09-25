@@ -12,9 +12,12 @@ public class KafkaProducer {
     private final Logger log = LoggerFactory.getLogger(KafkaProducer.class);
     private final KafkaTemplate<String, byte[]> kafkaTemplate;
     public KafkaProducer(KafkaTemplate<String, byte[]> kafkaTemplate) {
+		log.error(">>> Entering KafkaProducer(kafkaTemplate={})", kafkaTemplate);
         this.kafkaTemplate = kafkaTemplate;
+		log.warn("<<< Exiting KafkaProducer(kafkaTemplate={})", kafkaTemplate);
     }
     public void sendEvent(Patient patient) {
+		log.error(">>> Entering sendEvent(patient=<redacted>)");
         PatientEvent event = PatientEvent.newBuilder()
                 .setPatientId(patient.getId().toString())
                 .setName(patient.getName())
@@ -27,5 +30,6 @@ public class KafkaProducer {
         } catch (Exception e) {
             log.error("Error sending PatientCreated event: {}", event, e);
         }
+		log.warn("<<< Exiting sendEvent(patient=<redacted>)");
     }
 }
