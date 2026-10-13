@@ -13,21 +13,29 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/patients")
 @Tag(name = "Patient", description="API for managing Patients")
 public class PatientController {
+	private static final Logger log = LoggerFactory.getLogger(PatientController.class);
     private final PatientService patientService;
     public PatientController(PatientService patientService) {
+		log.debug(">>> Entering PatientController(patientService={})", patientService);
         this.patientService = patientService;
+		log.debug("<<< Exiting PatientController(patientService={})", patientService);
     }
 
     @GetMapping
     @Operation(summary = "Get Patients")
     public ResponseEntity<List<PatientResponseDTO>> getPatients() {
+		log.debug(">>> Entering getPatients()");
         List<PatientResponseDTO> patients = patientService.getPatients();
-        return ResponseEntity.ok(patients);
+        ResponseEntity<List<PatientResponseDTO>> result = ResponseEntity.ok(patients);
+		log.debug("<<< Exiting getPatients() -> {}", result);
+        return result;
     }
 
     @PostMapping
@@ -35,7 +43,10 @@ public class PatientController {
     public ResponseEntity<PatientResponseDTO> createPatient(
             @Validated({Default.class, CreatePatientValidationGroup.class})
             @RequestBody PatientRequestDTO patientRequestDTO) {
-        return ResponseEntity.ok(patientService.createPatient(patientRequestDTO));
+			log.debug(">>> Entering createPatient(patientRequestDTO={})", patientRequestDTO);
+        ResponseEntity<PatientResponseDTO> result = ResponseEntity.ok(patientService.createPatient(patientRequestDTO));
+		log.debug("<<< Exiting createPatient(patientRequestDTO={}) -> {}", patientRequestDTO, result);
+        return result;
     }
 
     @PutMapping("/{id}")
@@ -43,13 +54,19 @@ public class PatientController {
     public ResponseEntity<PatientResponseDTO> updatePatient(
             @PathVariable UUID id,@Validated({Default.class})
             @RequestBody PatientRequestDTO patientRequestDTO) {
-        return ResponseEntity.ok(patientService.updatePatient(id, patientRequestDTO));
+			log.debug(">>> Entering updatePatient(id={},patientRequestDTO={})", id, patientRequestDTO);
+        ResponseEntity<PatientResponseDTO> result = ResponseEntity.ok(patientService.updatePatient(id, patientRequestDTO));
+		log.debug("<<< Exiting updatePatient(id={},patientRequestDTO={}) -> {}", id, patientRequestDTO, result);
+        return result;
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a Patient")
     public ResponseEntity<Void> deletePatient(@PathVariable UUID id) {
+		log.debug(">>> Entering deletePatient(id={})", id);
         patientService.deletePatient(id);
-        return ResponseEntity.noContent().build();
+        ResponseEntity<Void> result = ResponseEntity.noContent().build();
+		log.debug("<<< Exiting deletePatient(id={}) -> {}", id, result);
+        return result;
     }
 }
