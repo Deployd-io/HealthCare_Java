@@ -32,6 +32,7 @@ public class PatientServiceImpl implements PatientService {
         this.billingServiceGrpcClient = billingServiceGrpcClient;
 		log.debug("PatientServiceImpl(patientRepository={},billingServiceGrpcClient={},kafkaProducer={}): this.billingServiceGrpcClient → {}", patientRepository, billingServiceGrpcClient, kafkaProducer, this.billingServiceGrpcClient);
         this.kafkaProducer = kafkaProducer;
+		log.debug("PatientServiceImpl(patientRepository={},billingServiceGrpcClient={},kafkaProducer={}): this.kafkaProducer → {}", patientRepository, billingServiceGrpcClient, kafkaProducer, this.kafkaProducer);
 		log.warn("<<< Exiting PatientServiceImpl(patientRepository={},billingServiceGrpcClient={},kafkaProducer={})", patientRepository, billingServiceGrpcClient, kafkaProducer);
     }
     @Override
@@ -39,6 +40,7 @@ public class PatientServiceImpl implements PatientService {
 		log.error(">>> Entering getPatients()");
         long start = System.currentTimeMillis();
         List<Patient> patients = patientRepository.findAll();
+		log.error("getPatients(): patients → {}", patients);
 		log.error("getPatients(): find query executed in {} ms", (System.currentTimeMillis() - start));
         List<PatientResponseDTO> result = patients.stream().map(PatientMapper::toPatientResponseDTO).toList();
 		log.warn("<<< Exiting getPatients() -> {}", result);
