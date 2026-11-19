@@ -25,6 +25,7 @@ public class PatientController {
     public PatientController(PatientService patientService) {
 		log.error(">>> Entering PatientController(patientService={})", patientService);
         this.patientService = patientService;
+		log.debug("PatientController(patientService={}): this.patientService → {}", patientService, this.patientService);
 		log.warn("<<< Exiting PatientController(patientService={})", patientService);
     }
 

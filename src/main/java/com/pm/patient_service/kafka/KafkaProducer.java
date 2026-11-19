@@ -14,6 +14,7 @@ public class KafkaProducer {
     public KafkaProducer(KafkaTemplate<String, byte[]> kafkaTemplate) {
 		log.error(">>> Entering KafkaProducer(kafkaTemplate={})", kafkaTemplate);
         this.kafkaTemplate = kafkaTemplate;
+		log.debug("KafkaProducer(kafkaTemplate={}): this.kafkaTemplate → {}", kafkaTemplate, this.kafkaTemplate);
 		log.warn("<<< Exiting KafkaProducer(kafkaTemplate={})", kafkaTemplate);
     }
     public void sendEvent(Patient patient) {

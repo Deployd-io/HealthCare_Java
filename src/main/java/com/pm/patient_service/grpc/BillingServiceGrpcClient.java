@@ -26,6 +26,7 @@ public class BillingServiceGrpcClient {
                 serverPort).usePlaintext().build();
 
         blockingStub = BillingServiceGrpc.newBlockingStub(channel);
+		log.debug("BillingServiceGrpcClient(serverAddress={},serverPort={}): blockingStub → {}", serverAddress, serverPort, blockingStub);
 		log.warn("<<< Exiting BillingServiceGrpcClient(serverAddress={},serverPort={})", serverAddress, serverPort);
     }
     public BillingResponse createBillingAccount(String patientId, String name, String email) {

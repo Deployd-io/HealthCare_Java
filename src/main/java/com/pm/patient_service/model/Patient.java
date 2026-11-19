@@ -42,6 +42,7 @@ public class Patient {
     public void setId(UUID id) {
 		log.error(">>> Entering setId(id={})", id);
         this.id = id;
+		log.debug("setId(id={}): this.id → {}", id, this.id);
 		log.warn("<<< Exiting setId(id={})", id);
     }
 
@@ -54,6 +55,7 @@ public class Patient {
     public void setName(String name) {
 		log.error(">>> Entering setName(name={})", name);
         this.name = name;
+		log.debug("setName(name={}): this.name → {}", name, this.name);
 		log.warn("<<< Exiting setName(name={})", name);
     }
 
@@ -66,6 +68,7 @@ public class Patient {
     public void setEmail(String email) {
 		log.error(">>> Entering setEmail(email=<redacted>)");
         this.email = email;
+		log.debug("setEmail(email=<redacted>): this.email → <redacted>");
 		log.warn("<<< Exiting setEmail(email=<redacted>)");
     }
 
@@ -78,6 +81,7 @@ public class Patient {
     public void setAddress(String address) {
 		log.error(">>> Entering setAddress(address=<redacted>)");
         this.address = address;
+		log.debug("setAddress(address=<redacted>): this.address → <redacted>");
 		log.warn("<<< Exiting setAddress(address=<redacted>)");
     }
 
@@ -90,6 +94,7 @@ public class Patient {
     public void setDateOfBirth(LocalDate dateOfBirth) {
 		log.error(">>> Entering setDateOfBirth(dateOfBirth=<redacted>)");
         this.dateOfBirth = dateOfBirth;
+		log.debug("setDateOfBirth(dateOfBirth=<redacted>): this.dateOfBirth → <redacted>");
 		log.warn("<<< Exiting setDateOfBirth(dateOfBirth=<redacted>)");
     }
 
@@ -102,6 +107,7 @@ public class Patient {
     public void setRegisteredDate(LocalDate registeredDate) {
 		log.error(">>> Entering setRegisteredDate(registeredDate={})", registeredDate);
         this.registeredDate = registeredDate;
+		log.debug("setRegisteredDate(registeredDate={}): this.registeredDate → {}", registeredDate, this.registeredDate);
 		log.warn("<<< Exiting setRegisteredDate(registeredDate={})", registeredDate);
     }
 }
